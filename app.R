@@ -8,6 +8,9 @@ library(readxl)
 library(ggprism)
 theme_set(theme_prism())
 
+# github link
+github_link <- "https://github.com/mstanley-yo/satolab-titration-helper"
+
 # ggtitration - plot titration & calculate dilutions
 ggtitration <- function(data, targetvolume) {
     # process into three columns: titre, virus, rlu
@@ -108,12 +111,12 @@ ui <- fluidPage(
             mainPanel(
                 h3("About this website"),
                 p("Written in R Shiny by Maximilian Stanley Yo."),
-                p("Follow development here: "),
-                p(tags$a(
-                    "GitHub Repository", 
-                    href = "https://github.com/mstanley-yo/satolab-titration-helper",
-                    target = "_blank"
-                ))
+                p("Follow development here: ",
+                  tags$a(
+                      "GitHub Repository", 
+                      href = github_link,
+                      target = "_blank")
+                )
             )
         ) 
     ) 
@@ -136,7 +139,7 @@ server <- function(input, output) {
             input$targetvolume_input
         )
     })
-} # server
+}
 
 
 # Create Shiny object #####
