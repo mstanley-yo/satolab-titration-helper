@@ -2,7 +2,6 @@
 # Load R packages
 library(shiny)
 library(bslib)
-library(shinythemes)
 library(tidyverse)
 library(readxl)
 library(ggprism)
@@ -68,58 +67,56 @@ ggtitration <- function(data, targetvolume) {
 }
 
 # ui function #####
-ui <- fluidPage(
-    theme = shinytheme("cerulean"),
-    navbarPage(
-        "Titration calculator",
-        tabPanel(
-            "Calculator",
-            layout_columns(
-                col_widths = c(6, 6),  # 6/12 = half page for each column
-                
-                # --- Left column: inputs + example image ---
-                bslib::card(
-                    h4("Please input results and target volume:"),
-                    fileInput(
-                        "result_input", 
-                        "Result input (.xlsx)", 
-                        accept = ".xlsx"
-                    ),
-                    numericInput(
-                        "targetvolume_input", 
-                        "Target volume at 1000 RLU/uL", 
-                        value = 5000, 
-                        min = 0
-                    ),
-                    h4("Results file example:"),
-                    img(
-                        src = "ggtitration_example.png", 
-                        width = "100%", 
-                        alt = "Example input format"
-                    )
-                ),
-                
-                # --- Right column: plot output ---
-                bslib::card(
-                    h4("Titration plot:"),
-                    plotOutput("plot_output", height = "500px")
-                )
+ui <- page_fluid(
+    theme = bs_theme(bootswatch = "flatly"),
+    
+    tags$head(
+        tags$title("Pseudovirus Titration Calculator")  
+    ),
+    tags$h3(
+        "Pseudovirus Titration Calculator", 
+        class = "text-primary", 
+        style = "margin-top: 15px;margin-bottom: 15px;"
+    ),
+    layout_columns(
+        col_widths = c(6, 6),  # 6/12 = half page for each column
+        
+        # --- Left column: inputs + example image ---
+        bslib::card(
+            h4("Please input results and target volume:"),
+            fileInput(
+                "result_input", 
+                "Result input (.xlsx)", 
+                accept = ".xlsx"
+            ),
+            numericInput(
+                "targetvolume_input", 
+                "Target volume at 1000 RLU/uL (uL)", 
+                value = 5000, 
+                min = 0
+            ),
+            h4("Results file example:"),
+            img(
+                src = "ggtitration_example.png", 
+                width = "100%", 
+                alt = "Example input format"
+            ),
+            br(),
+            p("Written in R Shiny by Maximilian Stanley Yo."),
+            p("Follow development here: ",
+              tags$a(
+                  "GitHub Repository", 
+                  href = github_link,
+                  target = "_blank")
             )
         ),
-        tabPanel(
-            "About",
-            mainPanel(
-                h3("About this website"),
-                p("Written in R Shiny by Maximilian Stanley Yo."),
-                p("Follow development here: ",
-                  tags$a(
-                      "GitHub Repository", 
-                      href = github_link,
-                      target = "_blank")
-                )
-            )
-        ) 
-    ) 
+        
+        # --- Right column: plot output ---
+        bslib::card(
+            h4("Titration plot:"),
+            plotOutput("plot_output", height = "500px")
+        )
+    )
 )
 
 # server function #####
