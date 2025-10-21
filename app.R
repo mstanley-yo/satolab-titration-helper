@@ -2,13 +2,18 @@
 # Load R packages
 library(shiny)
 library(bslib)
-library(tidyverse)
+library(dplyr)
+library(ggplot2)
 library(readxl)
 library(ggprism)
 theme_set(theme_prism())
 
-# github link
-github_link <- "https://github.com/mstanley-yo/satolab-titration-helper"
+# clickable github link
+github_link <- tags$a(
+    shiny::icon("github"), "GitHub",
+    href = "https://github.com/mstanley-yo/satolab-titration-helper",
+    target = "_blank"
+)
 
 # ggtitration - plot titration & calculate dilutions
 ggtitration <- function(data, targetvolume) {
@@ -78,43 +83,43 @@ ui <- page_fluid(
         class = "text-primary", 
         style = "margin-top: 15px;margin-bottom: 15px;"
     ),
+    
     layout_columns(
         col_widths = c(6, 6),  # 6/12 = half page for each column
         
         # --- Left column: inputs + example image ---
-        bslib::card(
-            h4("Please input results and target volume:"),
-            fileInput(
-                "result_input", 
-                "Result input (.xlsx)", 
-                accept = ".xlsx"
+        layout_columns(
+            col_widths = c(12, 12),
+            card(
+                card_header("Please input results and target volume"),
+                fileInput(
+                    "result_input", 
+                    "Result input (.xlsx)", 
+                    accept = ".xlsx"
+                ),
+                numericInput(
+                    "targetvolume_input", 
+                    "Target volume at 1000 RLU/uL (uL)", 
+                    value = 5000, 
+                    min = 0
+                )
             ),
-            numericInput(
-                "targetvolume_input", 
-                "Target volume at 1000 RLU/uL (uL)", 
-                value = 5000, 
-                min = 0
-            ),
-            h4("Results file example:"),
-            img(
-                src = "ggtitration_example.png", 
-                width = "100%", 
-                alt = "Example input format"
-            ),
-            br(),
-            p("Written in R Shiny by Maximilian Stanley Yo."),
-            p("Follow development here: ",
-              tags$a(
-                  "GitHub Repository", 
-                  href = github_link,
-                  target = "_blank")
+            card(
+                card_header("Results file example"),
+                img(
+                    src = "ggtitration_example.png", 
+                    width = "100%", 
+                    alt = "Example input format"
+                )
             )
         ),
         
         # --- Right column: plot output ---
-        bslib::card(
-            h4("Titration plot:"),
-            plotOutput("plot_output", height = "500px")
+        card(
+            card_header("Titration Plot"),
+            plotOutput("plot_output"),
+            p("Written in R Shiny by Maximilian Stanley Yo."),
+            github_link
         )
     )
 )
