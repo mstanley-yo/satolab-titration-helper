@@ -1,9 +1,7 @@
-# satolab-titration-helper
 # Load R packages
 library(shiny)
 library(bslib)
-library(dplyr)
-library(ggplot2)
+library(tidyverse)
 library(readxl)
 library(ggprism)
 theme_set(theme_prism())
@@ -20,9 +18,11 @@ ggtitration <- function(data, targetvolume) {
     # process into three columns: titre, virus, rlu
     df_titration <- data %>%
         mutate(titre = as.character(c(10/2^(0:6),0))) %>%
-        pivot_longer(where(is.numeric), 
-                     names_to = "virus", 
-                     values_to = "rlu") %>%
+        pivot_longer(
+            where(is.numeric), 
+            names_to = "virus", 
+            values_to = "rlu"
+        ) %>%
         mutate(virus = str_replace(virus, "\\..*", "")) %>%
         mutate(titre = as.numeric(titre))
     
@@ -64,11 +64,15 @@ ggtitration <- function(data, targetvolume) {
         ggplot(aes(x = titre, y = rlu, colour = virus, group = virus)) +
         geom_point() +
         geom_smooth(method = "lm", se = F) +
-        labs(caption = caption_text,
-             x = "Titre (uL)",
-             y = "RLU") +
-        theme(legend.position = "bottom",
-              plot.caption = element_text(size = 18))
+        labs(
+            caption = caption_text,
+            x = "Titre (uL)",
+            y = "RLU"
+        ) +
+        theme(
+            legend.position = "bottom",
+            plot.caption = element_text(size = 18)
+        )
 }
 
 # ui function #####
@@ -98,7 +102,7 @@ ui <- page_fluid(
                     accept = ".xlsx"
                 ),
                 numericInput(
-                    "targetvolume_input", 
+                    "target_volume", 
                     "Target volume at 1000 RLU/uL (uL)", 
                     value = 5000, 
                     min = 0
@@ -129,16 +133,14 @@ server <- function(input, output) {
     output$plot_output <- renderPlot({
         # only render the plot if it can
         validate(
-            need(input$result_input != "", 
-                 "Please upload a result file."),
-            need(input$targetvolume_input != "", 
-                 "Please input a target volume.")
+            need(input$result_input != "", "Please upload a results file."),
+            need(input$target_volume != "", "Please input a target volume.")
         )
         
         # render the plot using ggtitration()
         ggtitration(
             read_excel(input$result_input$datapath),
-            input$targetvolume_input
+            input$target_volume
         )
     })
 }
